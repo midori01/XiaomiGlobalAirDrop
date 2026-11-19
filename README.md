@@ -127,3 +127,16 @@ against `blobs.sha256`.
 
 Open the module action in the manager, or run `sh /data/adb/modules/xiaomi_global_airdrop/action.sh`.
 The boot log is `service.log` in the module directory.
+
+## Credits
+
+- MiAirDrop by [wxxsfxyzm](https://github.com/wxxsfxyzm): the Wonder provider build of the
+  Peach v2 driver, the Xiaomi `wonder.ko`, the firmware and the regulatory database this
+  module loads, and the work that made Wonder run on Xiaomi's Qualcomm Wi-Fi at all.
+- Quick Share Extension (Mosey) by Google: the app, its AWDL stack and the Wonder driver design.
+- [LSPlant](https://github.com/LSPosed/LSPlant) by LSPosed: the ART hook behind the GMS flag hook.
+- [ShadowHook](https://github.com/bytedance/android-inline-hook) by ByteDance: the inline hook LSPlant runs on.
+- [Zygisk API](https://github.com/topjohnwu/Magisk) by topjohnwu: `zygisk/src/zygisk.hpp`.
+- [Zygisk Next](https://github.com/Dr-TSNG/ZygiskNext) by the LSPosed developers: loads the hook into GMS.
+- [KernelSU](https://github.com/tiann/KernelSU) by tiann: the module preinit hook and the nolibc
+  runner that `fwsel` is built with.
