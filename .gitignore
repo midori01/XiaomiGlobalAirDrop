@@ -1,0 +1,24 @@
+*.zip
+.claude/
+zygisk/out/
+zygisk/src/payload_dex.h
+dist/
+module/zygisk/
+module/preinit/bin/
+module/SHA256SUMS
+module/kmod/qca_cld3_peach_v2.ko
+kmod-src/xga_wonder/*.o
+kmod-src/xga_wonder/*.ko
+kmod-src/xga_wonder/*.mod*
+kmod-src/xga_wonder/.*.cmd
+kmod-src/xga_wonder/Module.symvers
+kmod-src/xga_wonder/modules.order
+module/kmod/xga_wonder.ko
+
+# Third-party binaries, see "Third-party files" in README.md
+module/firmware/peach/amss20.bin
+module/firmware/peach/regdb_xiaomi.bin
+module/kmod/wonder.ko
+tools/driver/qca_cld3_peach_v2.orig.ko
+module/system/product/priv-app/MoseyApp/MoseyApp.apk
+module/system/system_ext/framework/com.google.android.moseylib.jar
