@@ -13,14 +13,31 @@ echo "  privileged: $(yesno has 'privateFlags=.*PRIVILEGED')"
 for p in MANAGE_WIFI_INTERFACES BLUETOOTH_PRIVILEGED LOCATION_HARDWARE NEARBY_WIFI_DEVICES; do
     echo "  $p: $(yesno has "android.permission.$p: granted=true")"
 done
-echo "  process: $(ps -A -o LABEL,NAME | awk -v p="$PKG" '$2 == p {print $1}')"
-echo "mosey_server: $(ps -A -o LABEL,NAME | awk '$2 == "mosey_server" {print $1}')"
-echo "  service registered: $(yesno sh -c "service check $SVC | grep -q ': found'")"
+# KernelSU runs this under busybox ash, whose ps lacks LABEL/NAME; use toybox ps.
+label() { /system/bin/ps -A -o LABEL,NAME 2>/dev/null | awk -v p="$1" '$2 == p {print $1; exit}'; }
+l=$(label "$PKG")
+echo "  process: ${l:-not running (started on demand by Quick Share)}"
+l=$(label mosey_server)
+echo "mosey_server: ${l:-$(getprop init.svc.mosey_server) (lazy service, starts on demand)}"
+if service check "$SVC" 2>/dev/null | grep -q ': found'; then
+    echo "  service registered: yes"
+elif [ -z "$l" ]; then
+    echo "  service registered: no (normal while idle)"
+else
+    echo "  service registered: NO"
+fi
 G=/data/adb/modules/gmstweaks
 if [ -d "$G" ] && [ ! -e "$G/disable" ] && [ ! -e "$G/remove" ]; then
-    echo "GMS flags (GMS Tweaks): $(logcat -d -s QSUZygisk 2>/dev/null | grep -c -E 'Flag (45802344|45704091) hook active') of 2 forced this boot"
+    hook="GMS Tweaks"
+    n=$(logcat -d -s QSUZygisk 2>/dev/null | grep -E 'Flag (45802344|45704091) hook active' | grep -o -E '4580234[4]|4570409[1]' | sort -u | wc -l)
 else
-    echo "GMS flags (bundled hook): $(logcat -d -s XGAirDrop 2>/dev/null | grep -c 'forced true') of 2 forced this boot"
+    hook="bundled hook"
+    n=$(logcat -d -s XGAirDrop 2>/dev/null | grep 'forced true' | grep -o -E '4580234[4]|4570409[1]' | sort -u | wc -l)
+fi
+if [ "$n" -gt 0 ]; then
+    echo "GMS flags ($hook): $n of 2 forced (seen in logcat)"
+else
+    echo "GMS flags ($hook): not in logcat (the boot log may have rotated out; reboot and rerun to check)"
 fi
 echo "Wi-Fi firmware: $(cat /sys/kernel/peach_v2/wlan/fw/[0-9]*/version 2>/dev/null | head -1)"
 echo "Wonder: loaded=$(yesno test -d /sys/module/wonder) enable=$(cat /proc/sys/net/wonder/wonder_enable 2>/dev/null)"

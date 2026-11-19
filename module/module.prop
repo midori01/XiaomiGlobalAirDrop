@@ -1,6 +1,6 @@
 id=xiaomi_global_airdrop
 name=Quick Share AirDrop for Xiaomi Global
-version=v1.0
-versionCode=100
+version=v1.0.1
+versionCode=101
 author=Midori, Claude Opus 5.5
 description=Lets Google Quick Share exchange files with Apple AirDrop on Xiaomi global ROMs with the Peach v2 Wi-Fi chip (e.g. Xiaomi 17 Ultra). Makes the bundled Quick Share Extension privileged and loads the AWDL-capable Wi-Fi firmware, driver and Wonder module. Forces the GMS flags that let Quick Share use it.
