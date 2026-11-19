@@ -26,6 +26,8 @@ elif [ -z "$l" ]; then
 else
     echo "  service registered: NO"
 fi
+# GMS only binds Mosey's ExternalSharingService when both nearby flags are forced, so a live
+# binding proves them. The hook's own log lines are gone from logcat within a minute of boot.
 G=/data/adb/modules/gmstweaks
 if [ -d "$G" ] && [ ! -e "$G/disable" ] && [ ! -e "$G/remove" ]; then
     hook="GMS Tweaks"
@@ -34,10 +36,12 @@ else
     hook="bundled hook"
     n=$(logcat -d -s XGAirDrop 2>/dev/null | grep 'forced true' | grep -o -E '4580234[4]|4570409[1]' | sort -u | wc -l)
 fi
-if [ "$n" -gt 0 ]; then
-    echo "GMS flags ($hook): $n of 2 forced (seen in logcat)"
+if dumpsys activity services "$PKG" 2>/dev/null | grep -q -E "binding=AppBindRecord\{.* $PKG/\.ExternalSharingService(Lite)?:com\.google\.android\.gms\}"; then
+    echo "GMS flags ($hook): active (GMS is bound to Quick Share Extension)"
+elif [ "$n" -gt 0 ]; then
+    echo "GMS flags ($hook): $n of 2 forced (seen in logcat); GMS not bound to Quick Share Extension right now"
 else
-    echo "GMS flags ($hook): not in logcat (the boot log may have rotated out; reboot and rerun to check)"
+    echo "GMS flags ($hook): unknown; GMS not bound to Quick Share Extension right now (open Quick Share and rerun)"
 fi
 echo "Wi-Fi firmware: $(cat /sys/kernel/peach_v2/wlan/fw/[0-9]*/version 2>/dev/null | head -1)"
 echo "Wonder: loaded=$(yesno test -d /sys/module/wonder) enable=$(cat /proc/sys/net/wonder/wonder_enable 2>/dev/null)"
